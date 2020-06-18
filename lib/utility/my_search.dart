@@ -1,4 +1,12 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+
+import '../models/user_shop_model.dart';
+import '../models/user_shop_model.dart';
+import '../models/user_shop_model.dart';
+import '../models/user_shop_model.dart';
 
 class MySearch extends StatelessWidget {
   @override
@@ -14,18 +22,34 @@ class MySearch extends StatelessWidget {
               })
         ],
       ),
-      drawer: Drawer(),
+      //drawer: Drawer(),
     );
   }
 }
 
 class DataSearch extends SearchDelegate<String> {
-  final cities = [
-    "ออนซอนตำแซ่บ",
-    "ต่ายจานโต",
-    "บะหมี่เกี๊ยวหน้า บขส.",
-    "นกปากดุก",
-  ];
+
+  List<UserShopModel> userShopModels = List();
+  List<String> shops = List();
+
+  DataSearch() {
+    initFirst();
+  }
+
+  Future<Null> initFirst() async {
+    String url = 'http://movehubs.com/app/getAllShop.php';
+    await Dio().get(url).then((value) {
+      //print('value = $value');
+
+      var result = json.decode(value.data);
+      for (var map in result) {
+        UserShopModel shopModel = UserShopModel.fromJson(map);
+        userShopModels.add(shopModel);
+        shops.add(shopModel.name);
+      }
+
+    });
+  }
 
   final recentCities = ["ออนซอนตำแซ่บ", "ต่ายจ่านโต"];
   @override
@@ -75,7 +99,7 @@ class DataSearch extends SearchDelegate<String> {
     // show when someone searches for something
     final suggestionList = query.isEmpty
         ? recentCities
-        : cities.where((p) => p.startsWith(query)).toList();
+        : shops.where((p) => p.startsWith(query)).toList();
 
     return ListView.builder(
       itemBuilder: (context, index) => ListTile(

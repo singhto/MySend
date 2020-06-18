@@ -22,6 +22,12 @@ import 'package:intl/intl.dart';
 import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../utility/my_api.dart';
+import '../utility/my_style.dart';
+import '../utility/normal_dialog.dart';
+import '../utility/normal_toast.dart';
+import '../utility/normal_toast.dart';
+
 class MainHome extends StatefulWidget {
   @override
   _MainHomeState createState() => _MainHomeState();
@@ -202,11 +208,15 @@ class _MainHomeState extends State<MainHome> {
   Widget createCard(UserShopModel model, String distance) {
     return GestureDetector(
       onTap: () {
-        print('You Click ${model.id}');
-        MaterialPageRoute route = MaterialPageRoute(
+
+        if (MyAPI().checkTimeShop()) {
+          MaterialPageRoute route = MaterialPageRoute(
           builder: (value) => MyFood(idShop: model.id),
         );
         Navigator.of(context).push(route).then((value) => checkAmount());
+        } else {
+          normalDialog(context, 'ร้านปิด', 'ร้านเปิดเวลา 8.00-18.00');
+        }
       },
       child: Card(
         child: Column(
@@ -262,7 +272,12 @@ class _MainHomeState extends State<MainHome> {
   Widget showCart() {
     return GestureDetector(
       onTap: () {
-        routeToShowCart();
+        if (lat == null) {
+          findLatLng();
+          normalToast('โปรดรอสักครู่ กำลังค้นหาพิกัด');
+        } else {
+          routeToShowCart();
+        }
       },
       child: MyStyle().showMyCart(amount),
     );
@@ -277,11 +292,15 @@ class _MainHomeState extends State<MainHome> {
   }
 
   void routeToShowCart() {
-    MaterialPageRoute materialPageRoute =
-        MaterialPageRoute(builder: (value) => ShowCart());
+    if (lat == null) {
+      normalToast('กรุณารอสักครู่ กำลังหาพิกัด');
+    }else {
+      MaterialPageRoute materialPageRoute =
+        MaterialPageRoute(builder: (value) => ShowCart(lat: lat,lng: lng,));
     Navigator.of(context)
         .push(materialPageRoute)
         .then((value) => checkAmount());
+    }
   }
 
   ListView userList() {

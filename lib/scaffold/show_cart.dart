@@ -14,6 +14,9 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ShowCart extends StatefulWidget {
+  final double lat, lng;
+  ShowCart({Key key, this.lat, this.lng}) : super(key: key);
+
   @override
   _ShowCartState createState() => _ShowCartState();
 }
@@ -25,7 +28,7 @@ class _ShowCartState extends State<ShowCart> {
   List<UserShopModel> userShopModels = List();
   List<int> idShopOnSQLites = List();
   List<int> transports = List();
-  List<int> distances = List();
+  List<String> distances = List();
   List<int> sumTotals = List();
 
   double latUser, lngUser;
@@ -39,6 +42,10 @@ class _ShowCartState extends State<ShowCart> {
   @override
   void initState() {
     super.initState();
+
+    latUser = widget.lat;
+    lngUser = widget.lng;
+
     findLocationUser();
   }
 
@@ -93,8 +100,18 @@ class _ShowCartState extends State<ShowCart> {
       userShopModel = UserShopModel.fromJson(map);
       userShopModels.add(userShopModel);
 
-      double lat1 = double.parse(userModel.lat);
-      double lng1 = double.parse(userModel.lng);
+      double lat1 = latUser;
+      double lng1 = lngUser;
+      print('lat, lng ===>>>>>>> $lat1, $lng1');
+
+      if (lat1 == null) {
+
+        lat1 = double.parse(userModel.lat);
+        lng1 = double.parse(userModel.lng);
+        
+      }
+
+
       double lat2 = double.parse(userShopModel.lat);
       double lng2 = double.parse(userShopModel.lng);
 
@@ -111,11 +128,16 @@ class _ShowCartState extends State<ShowCart> {
         print('Work indexOld ===>>> $indexOld');
 
         double distance = MyAPI().calculateDistance(lat1, lng1, lat2, lng2);
-        // print('distance ==>>>>> $distance');
+         print('distance ==>>>>> $distance');
+
+       
+        // print('distanceAint = $distanceAint');
+
+        var myFormat = NumberFormat('##0.0#', 'en_US');
+        String distanceString = myFormat.format(distance);
+        distances.add(distanceString);
 
         int distanceAint = distance.round();
-        // print('distanceAint = $distanceAint');
-        distances.add(distanceAint);
 
         int transport = MyAPI().checkTransport(distanceAint);
         print('transport ===>>> $transport');
@@ -125,7 +147,7 @@ class _ShowCartState extends State<ShowCart> {
         sumTotal = sumTotal + totalDelivery;
       } else {
         transports.add(0);
-        distances.add(0);
+        distances.add('');
       }
     });
   }
@@ -209,15 +231,13 @@ class _ShowCartState extends State<ShowCart> {
             onPressed: () {
               print('Confirm Here');
               if (MyAPI().checkTimeShop()) {
-                 Navigator.of(context).pop();
+                Navigator.of(context).pop();
                 orderThread();
               } else {
                 Navigator.of(context).pop();
-                normalDialog(context, 'ร้านปิดครับ', 'อยู่นอกเวลาทำการครับ ร้านปิด');
+                normalDialog(
+                    context, 'ร้านปิดครับ', 'อยู่นอกเวลาทำการครับ ร้านปิด');
               }
-
-              
-              
             },
             child: Text(
               'Confirm',
@@ -515,6 +535,4 @@ class _ShowCartState extends State<ShowCart> {
       ],
     );
   }
-
-  
 }
