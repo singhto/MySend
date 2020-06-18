@@ -11,9 +11,32 @@ import 'package:foodlion/models/user_shop_model.dart';
 import 'normal_toast.dart';
 
 class MyAPI {
+  Future<Null> addPhoneThread(
+      String idUserShop, String type, String phone) async {
+    String url =
+        'http://movehubs.com/app/addPhone.php?isAdd=true&idUserShop=$idUserShop&Type=$type&Phone=$phone';
+    await Dio()
+        .get(url)
+        .then((value) => normalToast('บันทึกเบอร์ติดต่อสำเร็จ'));
+  }
 
+  Future<String> findPhone(String idUserShop, String type) async {
+    String phone;
+    String url =
+        'http://movehubs.com/app/getPhoneWhereIdAnType.php?isAdd=true&idUserShop=$idUserShop&Type=$type';
 
-  
+    Response response = await Dio().get(url);
+    print('res ===>> $response');
+    if (response.toString() == 'null') {
+      return 'null';
+    } else {
+      var result = json.decode(response.data);
+      for (var map in result) {
+        phone = map['Phone'];
+      }
+      return phone;
+    }
+  }
 
   Future<Null> notificationAPI(String token, String title, String body) async {
     String url =
@@ -72,7 +95,7 @@ class MyAPI {
       onMessage: (message) {
         // ขณะเปิดแอพอยู่
         print('onMessage ==> $message');
-         normalToast('มี Notification คะ');
+        normalToast('มี Notification คะ');
       },
       onResume: (message) {
         // ปิดเครื่อง หรือ หน้าจอ

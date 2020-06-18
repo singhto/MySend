@@ -22,7 +22,7 @@ class RiderSuccess extends StatefulWidget {
 
 class _RiderSuccessState extends State<RiderSuccess> {
   OrderUserModel orderUserModel;
-  String nameShop, nameUser, tokenUser;
+  String nameShop, nameUser, tokenUser, idUser, idShop;
   int distance, transport, sumFood = 0;
   LatLng shopLatLng, userLatLng;
   IconData shopMarkerIcon;
@@ -71,10 +71,13 @@ class _RiderSuccessState extends State<RiderSuccess> {
 
     setState(() {
       nameShop = userShopModel.name;
+      idShop = userModel.id;
+
       shopLatLng = LatLng(double.parse(userShopModel.lat.trim()),
           double.parse(userShopModel.lng.trim()));
 
       nameUser = userModel.name;
+      idUser = userModel.id;
       tokenUser = userModel.token;
       userLatLng = LatLng(double.parse(userModel.lat.trim()),
           double.parse(userModel.lng.trim()));
@@ -244,7 +247,9 @@ class _RiderSuccessState extends State<RiderSuccess> {
   }
 
   Marker shopMarker() {
-    return Marker(
+    return Marker(onTap: () {
+      print('You Tap Shop');
+    },
       markerId: MarkerId('shopID'),
       icon: BitmapDescriptor.defaultMarkerWithHue(100.0),
       position: shopLatLng,
@@ -256,7 +261,9 @@ class _RiderSuccessState extends State<RiderSuccess> {
   }
 
   Marker userMarker() {
-    return Marker(
+    return Marker(onTap: () {
+      confirmCall(nameUser, 'User', idUser);
+    },
       markerId: MarkerId('userID'),
       icon: BitmapDescriptor.defaultMarkerWithHue(310.0),
       position: userLatLng,
@@ -265,6 +272,10 @@ class _RiderSuccessState extends State<RiderSuccess> {
         snippet: nameUser,
       ),
     );
+  }
+
+  Future<Null> confirmCall(String nameCall, String type, String id)async{
+    showDialog(context: context,builder: (context) => SimpleDialog(title: Text('คุณต้องการโทรหา $nameCall'),),);
   }
 
   Set<Marker> myMarker() {

@@ -9,6 +9,7 @@ import 'package:foodlion/models/user_shop_model.dart';
 import 'package:foodlion/utility/my_api.dart';
 import 'package:foodlion/utility/my_style.dart';
 import 'package:foodlion/utility/normal_dialog.dart';
+import 'package:foodlion/utility/normal_toast.dart';
 import 'package:foodlion/utility/sqlite_helper.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,6 +38,7 @@ class _ShowCartState extends State<ShowCart> {
   UserShopModel userShopModel;
 
   int totalPrice = 0, totalDelivery = 0, sumTotal = 0;
+  String phone;
 
   // Method
   @override
@@ -105,12 +107,9 @@ class _ShowCartState extends State<ShowCart> {
       print('lat, lng ===>>>>>>> $lat1, $lng1');
 
       if (lat1 == null) {
-
         lat1 = double.parse(userModel.lat);
         lng1 = double.parse(userModel.lng);
-        
       }
-
 
       double lat2 = double.parse(userShopModel.lat);
       double lng2 = double.parse(userShopModel.lng);
@@ -128,9 +127,8 @@ class _ShowCartState extends State<ShowCart> {
         print('Work indexOld ===>>> $indexOld');
 
         double distance = MyAPI().calculateDistance(lat1, lng1, lat2, lng2);
-         print('distance ==>>>>> $distance');
+        print('distance ==>>>>> $distance');
 
-       
         // print('distanceAint = $distanceAint');
 
         var myFormat = NumberFormat('##0.0#', 'en_US');
@@ -194,9 +192,18 @@ class _ShowCartState extends State<ShowCart> {
         width: MediaQuery.of(context).size.width,
         child: RaisedButton.icon(
           color: MyStyle().primaryColor,
-          onPressed: () {
-            confirmDialog(
-                context, 'Confirm Order', 'กรุณา Confirm Order ด้วย คะ');
+          onPressed: () async {
+            await MyAPI()
+                .findPhone(userModel.id.toString(), 'User')
+                .then((phone) {
+              print('phone = $phone');
+              if (phone == 'null') {
+                //print('No Data');
+                phoneForm();
+              } else {
+                confirmDialog(context, 'ยืนยันออเดอร์', 'กรุณายืนยันออเดอร์');
+              }
+            });
           },
           icon: Icon(
             Icons.check_box,
@@ -533,6 +540,52 @@ class _ShowCartState extends State<ShowCart> {
           ),
         ),
       ],
+    );
+  }
+
+  Future<Null> phoneForm() async {
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text('ใส่เบอร์โทรศัพท์ เพื่อสะดวกต่อการติดต่อ'),
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                width: 150.0,
+                child: TextField(onChanged: (value) => phone = value.trim(),
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    labelText: 'เบอร์ติดต่อ :',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                width: 200.0,
+                child: RaisedButton.icon(
+                    onPressed: () {
+                      if (phone == null || phone.isEmpty) {
+                        normalToast('เบอร์ติดต่อห้ามว่าง');
+                      } else if (phone.length == 10) {
+                        MyAPI().addPhoneThread(userModel.id.toString(), 'User', phone);
+                        Navigator.pop(context);
+                      } else {
+                        normalToast('กรอกเบอร์โทรให้ครบ 10 ตัว');
+                      }
+                    },
+                    icon: Icon(Icons.save),
+                    label: Text('บันทึก')),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 }
