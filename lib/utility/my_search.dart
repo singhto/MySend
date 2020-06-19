@@ -4,16 +4,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import '../models/user_shop_model.dart';
-import '../models/user_shop_model.dart';
-import '../models/user_shop_model.dart';
-import '../models/user_shop_model.dart';
 
 class MySearch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ค้นหาร้านค้า'),
+        title: Center(child: Text('ค้นหาร้านค้า')),
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.search),
@@ -80,18 +77,7 @@ class DataSearch extends SearchDelegate<String> {
   @override
   Widget buildResults(BuildContext context) {
     // show some reslt based on the selection
-    return Center(
-      child: Container(
-        height: 100.0,
-        width: 100.0,
-            child: Card(
-          color: Colors.red,
-          child: Center(
-            child: Text("ร้านค้าที่คุณค้นหา"),
-          ),
-        ),
-      ),
-    );
+    return Text('data');
   }
 
   @override
@@ -104,9 +90,10 @@ class DataSearch extends SearchDelegate<String> {
     return ListView.builder(
       itemBuilder: (context, index) => ListTile(
         onTap: () {
-          showResults(context);
+          //showResults(context);
+          print('You Click idFood');
         },
-        leading: Icon(Icons.location_city),
+        leading: Icon(Icons.store_mall_directory),
         title: RichText(text: TextSpan(
           text: suggestionList[index].substring(0,query.length),
           style: TextStyle(

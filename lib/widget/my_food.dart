@@ -50,6 +50,7 @@ class _MyFoodState extends State<MyFood> {
     return idShop;
   }
 
+
   Future<void> readAllFood() async {
     String idShop = await getIdShop();
     if (myIdShop != null) {
@@ -93,7 +94,7 @@ class _MyFoodState extends State<MyFood> {
 
   Widget showContent(int index) => GestureDetector(
         onTap: () {
-          print('You Click idFood');
+          //print('You Click idFood');
           MaterialPageRoute route = MaterialPageRoute(
               builder: (value) => ShowFood(
                     foodModel: foodModels[index],
@@ -199,7 +200,7 @@ class _MyFoodState extends State<MyFood> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('รายการอาหาร'),
+        title: Text('เลือกเมนูอาหารตามชอบ'),
         actions: <Widget>[showCart()],
       ),
       body: statusData ? showNoData() : showListFood(),

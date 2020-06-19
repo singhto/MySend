@@ -26,7 +26,6 @@ import '../utility/my_api.dart';
 import '../utility/my_style.dart';
 import '../utility/normal_dialog.dart';
 import '../utility/normal_toast.dart';
-import '../utility/normal_toast.dart';
 
 class MainHome extends StatefulWidget {
   @override
@@ -462,7 +461,7 @@ class _MainHomeState extends State<MainHome> {
               ? showShop()
               : Center(
                   child: MyStyle()
-                      .showTitleH2Dark('ขออภัยคะ ไม่มี ร้านอาหารใกล้คุณเลย คะ'),
+                      .showTitleH2Dark('ไม่มี ร้านอาหารใกล้คุณ'),
                 ),
         ],
       ),
